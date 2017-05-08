@@ -18,6 +18,12 @@ module Freee
       }
     end
 
+    def self.revoke_params(**kwarg)
+      {
+        'token' => kwarg[:refresh_token]
+      }
+    end
+
     def self.create_client(**kwarg)
       @@client = OAuth2::Client.new(kwarg[:client_id], kwarg[:secret_key], OPTIONS) do |con|
         con.request :url_encoded
@@ -34,6 +40,11 @@ module Freee
         token: get_token.token,
         refresh_token: get_token.refresh_token
       }
+    end
+     
+    def self.revoke_token(**kwarg)
+      self.create_client(kwarg) if @@client.nil?
+      revoke_token = @@client.post('/oauth/revoke', revoke_params(kwarg))
     end
 
     def self.refresh_token(**kwarg)
